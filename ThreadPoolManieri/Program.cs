@@ -75,7 +75,7 @@ namespace ThreadPoolManieri
         {
             for (int i = 0; i <= 10; i++)
             {
-                ThreadPool.QueueUserWorkItem(new WaitCallback(Ricerca(s, nomi))); //errore 
+                ThreadPool.QueueUserWorkItem(new WaitCallback(Ricerca(s, nomi))); //errore  
             }
         }
 
