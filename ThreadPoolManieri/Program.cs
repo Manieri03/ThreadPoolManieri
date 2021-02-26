@@ -11,13 +11,15 @@ namespace ThreadPoolManieri
 {
     class Program
     {
+        static string s;
+        static List<string> nomi = new List<string>();
         static void Main(string[] args)
         {
             StreamReader sr = new StreamReader("nomi.txt");
             string file = "nomi.txt";
             if (File.Exists(file))
             {
-                List<string> nomi = new List<string>();
+                
                 string line;
                 while ((line = sr.ReadLine()) != null)
                 {
@@ -25,13 +27,13 @@ namespace ThreadPoolManieri
                 }
 
                 //stampo tutti i nomi
-                foreach (string s in nomi)
+                foreach (string nome in nomi)
                 {
-                    Console.WriteLine(s);
+                    Console.WriteLine(nome);
                 }
 
                 Console.Write("\nInserisci qui un nome e cognome da ricercare: ");
-                string nome = Console.ReadLine();
+                s = Console.ReadLine();
 
 
 
@@ -42,8 +44,8 @@ namespace ThreadPoolManieri
                 crono.Start();
                 ThreadPoolUtilizzo("Mario Rossi", nomi);
                 crono.Stop();
-
-                Console.WriteLine("Tempo impiegato Thread Pool" + crono.ElapsedTicks.ToString());
+                
+                Console.WriteLine("Tempo impiegato Thread Pool: " + crono.ElapsedTicks.ToString());
                 crono.Reset();
 
 
@@ -53,7 +55,7 @@ namespace ThreadPoolManieri
                 ThreadUtilizzo("Mario Rossi", nomi);
                 crono.Stop();
 
-                Console.WriteLine("Tempo impiegato Thread" + crono.ElapsedTicks.ToString());
+                Console.WriteLine("Tempo impiegato Thread: " + crono.ElapsedTicks.ToString()); 
                 
                 Console.ReadLine();
             }
@@ -64,30 +66,41 @@ namespace ThreadPoolManieri
         {
             for(int i=0; i < 10; i++)
             {
-                Thread t1 = new Thread(() => Ricerca(s, nomi));
+                Thread t1 = new Thread(Ricerca);
                 t1.Start();
             }
             
         }
 
 
-        private static void ThreadPoolUtilizzo(string s, List<string> nomi)
+        static void ThreadPoolUtilizzo(string s, List<string> nomi)
         {
             for (int i = 0; i <= 10; i++)
             {
-                ThreadPool.QueueUserWorkItem(new WaitCallback(Ricerca(s, nomi))); //errore  
+                ThreadPool.QueueUserWorkItem(new WaitCallback(Ricerca)); //errore  
             }
         }
 
-        static string Ricerca(string s, List <string> nomi)
+        static void Ricerca(object callback)
         {
+            bool trovato = false;
             int i;
             for (i = 0; i < 100; i++)
             {
-                if (s == nomi[i])
-                    return $"{s} è stato trovato ed è in posizione {i}";
+                if (s.ToLower().Trim() == nomi[i].ToLower().Trim())
+                    trovato = true;
+                    
             }
-            return $"{s} non è stato trovato";
+
+            if (trovato == false)
+            {
+                Console.WriteLine($"{s} non è stato trovato");
+            }
+            else
+            {
+                Console.WriteLine($"{s} è stato trovato ed è in posizione {i}");
+            }
+            
         }
 
     }
